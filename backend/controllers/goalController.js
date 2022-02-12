@@ -1,14 +1,16 @@
-const Goal = require('../models/goalModal')
-
 const asycnHandler = require('express-async-handler')
 const { threadId } = require('worker_threads')
+const Goal = require('../models/goalModal')
+const User = require('../models/userModal')
+
+
 
 // @desc Get goals
 // @route GET /api/goals
 // @access private
 const getGoals = asycnHandler(async (req,res) => {
 
-    const goals = await Goal.find()
+    const goals = await Goal.find({user:req.user.id})
 
     res.status(200).json({goals})
 })
@@ -23,7 +25,10 @@ const setGoal = asycnHandler(async (req,res) => {
         throw new Error('Please add a text field')
     }
 
-    const goal = await Goal.create({text: req.body.text})
+    const goal = await Goal.create({
+        text: req.body.text,
+        user: req.user.id
+    })
 
     res.status(201).json({
         goal
